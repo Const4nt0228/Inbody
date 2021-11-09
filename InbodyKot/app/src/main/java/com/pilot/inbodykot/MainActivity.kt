@@ -9,13 +9,15 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import javax.sql.RowSetListener
 
 /*Inbody Web 개발 지원자 박상수*/
 
@@ -25,16 +27,42 @@ class MainActivity : AppCompatActivity() {
     var btn_takepic1: Button? = null
     var btn_opnalbum1: Button? = null
 
-    private val OPEN_GALLERY = 1
+    private val GALLERY = 1
+    private var imageView: ImageView? = .profilemodifyProfileIV
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val filterActivityLauncher: ActivityResultLauncher<Intent> =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+                if(it.resultCode == RESULT_OK && it.data !=null) {
+                    var currentImageUri = it.data?.data
+                    try {
+                        currentImageUri?.let {
+                            if(Build.VERSION.SDK_INT < 28) {
+
+                            } else {
+
+                            }
+                        }
+
+
+                    }catch(e:Exception) {
+                        e.printStackTrace()
+                    }
+                } else if(it.resultCode == RESULT_CANCELED){
+                    Toast.makeText(this, "사진 선택 취소", Toast.LENGTH_LONG).show();
+                }else{
+                    Log.d("ActivityResult","something wrong")
+                }
+            }
+
+
         this.InitializeView()
         this.SetListener()
-
 
 
 
@@ -58,27 +86,15 @@ class MainActivity : AppCompatActivity() {
 
         }
         btn_opnalbum1?.setOnClickListener {
+            val intent: Intent = Intent(Intent.ACTION_GET_CONTENT)
+            intent.setType("image/*")
+            activityResultLauncher.launch(intent)
+
+
 
         }
     }//fun : 리스너 정리용
 
-
-    private fun openGallery(){
-        var writePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        var readPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-        if (writePermission == PackageManager.PERMISSION_DENIED || readPermission == PackageManager.PERMISSION_DENIED) {
-        // 권한 없어서 요청
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE), REQ_STORAGE_PERMISSION) }
-        else {
-        // 권한 있음
-        var intent = Intent(Intent.ACTION_PICK)
-            intent.data = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-            intent.type = "image/*"
-            startActivityForResult(intent, REQ_GALLERY) }
-        }
-
-            출처: https://superwony.tistory.com/101 [개발자 키우기]
-    }
 
 
 }
