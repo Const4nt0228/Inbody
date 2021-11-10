@@ -16,6 +16,19 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.InbodyKot">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.pilot.inbodykot.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        출처: https://juahnpop.tistory.com/223 [Blacklog]
+
         <activity
             android:name=".MainActivity"
             android:exported="true">
