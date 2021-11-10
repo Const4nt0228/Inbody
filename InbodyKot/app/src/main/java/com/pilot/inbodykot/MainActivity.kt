@@ -22,6 +22,7 @@ import android.graphics.ImageDecoder
 import android.os.Build
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -136,56 +137,15 @@ class MainActivity : AppCompatActivity() {
             var bit1 = img_view1?.drawable?.toBitmap()
             // var bit1 = img_view1?.let { it1 -> viewToBitmap(it1) }
             var bit2 = img_view2?.drawable?.toBitmap()
-
             bit0 = combineBitmaps(bit1!!,bit2!!)
-
-
-           /* var width : Int = 0
-            var height : Int = 0
-
-            if (bit1 != null && bit2!=null) {
-                if(bit1.width>bit2.width){
-                    width = bit1.width + bit2.width
-                    height = bit1.width
-                }else{
-                    width = bit1.width + bit2.width
-                    height = bit2.width
-                }
-            }
-
-            bit0 = Bitmap.createBitmap(width,height,Bitmap.Config.ARGB_8888)
-            val comboImage = Canvas(bit0)
-            if (bit1 != null) {
-                comboImage.drawBitmap(bit1, 0f, 0f, null)
-            };
-            if (bit2 != null && bit1 != null) {
-                comboImage.drawBitmap(bit2, bit1.width.toFloat(), 0f, null)
-            };*/
-
-            img_view2?.setImageBitmap(bit0)
-
+            //img_view2?.setImageBitmap(bit0)
+            Toast.makeText(this,"이미지가 저장되었습니다.", Toast.LENGTH_SHORT ).show()
             MediaStore.Images.Media.insertImage(
                 this.contentResolver,
                 bit0,
               "BeforeNAfter_0",""
             )
 
-
-           /* var storage = Environment.getExternalStorageDirectory().absolutePath + "/path/"
-            var fileName : String = "BeforeNAfter_0.jpg"
-            var imagePath = storage+fileName
-
-            var imgFile = File(imagePath)
-
-            try{
-                imgFile.createNewFile()
-                var out : FileOutputStream = FileOutputStream(imgFile)
-                bit0.compress(Bitmap.CompressFormat.JPEG,100,out)
-                out.close()
-
-            }catch(e: IOException){
-
-            }*/
 
         }
 
@@ -258,7 +218,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // 카메라로 촬영한 이미지를 파일로 저장해준다
+    // 카메라로 촬영한 이미지를 파일로 저장
     @Throws(IOException::class)
     private fun createImageFile(): File {
         // Create an image file name
@@ -274,6 +234,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
+    //intent로 갤러리를 열거나 카메라를 열고 작업 수행 후 onActivityResult 에서 결과(이미지 반환)
+    //카메라 기능중 디코딩시  Bitmap.Config.HARDWARE 문제로 ImageDecoder.ALLOCATOR_SOFTWARE로 변환해서 사용
+    //참고 https://nanamare.tistory.com/170
     @Override
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -336,20 +300,20 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 else{
-                    val decode = ImageDecoder.createSource(this.contentResolver,
-                        Uri.fromFile(file))
-                    val bitmap = ImageDecoder.decodeBitmap(decode)
-                    img_view1?.setImageBitmap(bitmap)
-                    text_before!!.visibility=View.VISIBLE
-                    btn_takepic2!!.visibility = View.INVISIBLE
-                    btn_opnalbum2!!.visibility = View.INVISIBLE
-                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
-                        btn_savepic!!.setBackgroundColor(Color.BLUE)
-                        btn_savepic?.isEnabled = true
+//                    val decode = ImageDecoder.createSource(this.contentResolver,
+//                        Uri.fromFile(file))
+//                    val bitmap = ImageDecoder.decodeBitmap(decode)
 
+
+                    val decode = ImageDecoder.decodeBitmap(
+                        ImageDecoder.createSource(this.contentResolver,
+                            Uri.fromFile(file))
+                    ){  decoder: ImageDecoder, _: ImageDecoder.ImageInfo?, _: ImageDecoder.Source? ->
+                        decoder.isMutableRequired = true
+                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
                     }
 
-                    img_view1?.setImageBitmap(bitmap)
+                    img_view1?.setImageBitmap(decode)
                     text_before!!.visibility=View.VISIBLE
                     btn_takepic1!!.visibility = View.INVISIBLE
                     btn_opnalbum1!!.visibility = View.INVISIBLE
@@ -374,10 +338,22 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 else{
-                    val decode = ImageDecoder.createSource(this.contentResolver,
-                        Uri.fromFile(file))
-                    val bitmap = ImageDecoder.decodeBitmap(decode)
-                    img_view2?.setImageBitmap(bitmap)
+//                    val decode = ImageDecoder.createSource(this.contentResolver,
+//                        Uri.fromFile(file))
+//                    val bitmap = ImageDecoder.decodeBitmap(decode)
+
+
+                    val decode = ImageDecoder.decodeBitmap(
+                        ImageDecoder.createSource(this.contentResolver,
+                            Uri.fromFile(file))
+                    ){  decoder: ImageDecoder, _: ImageDecoder.ImageInfo?, _: ImageDecoder.Source? ->
+                        decoder.isMutableRequired = true
+                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    }
+
+
+
+                    img_view2?.setImageBitmap(decode)
                     text_after!!.visibility=View.VISIBLE
                     btn_takepic2!!.visibility = View.INVISIBLE
                     btn_opnalbum2!!.visibility = View.INVISIBLE
