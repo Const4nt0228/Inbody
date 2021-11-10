@@ -328,6 +328,8 @@ class MainActivity : AppCompatActivity() {
                         .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
                     img_view1?.setImageBitmap(bitmap)
                     text_before!!.visibility=View.VISIBLE
+                    btn_takepic1!!.visibility = View.INVISIBLE
+                    btn_opnalbum1!!.visibility = View.INVISIBLE
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(Color.BLUE)
                         btn_savepic?.isEnabled = true
@@ -336,18 +338,21 @@ class MainActivity : AppCompatActivity() {
                 else{
                     val decode = ImageDecoder.createSource(this.contentResolver,
                         Uri.fromFile(file))
+                    val bitmap = ImageDecoder.decodeBitmap(decode)
+                    img_view1?.setImageBitmap(bitmap)
+                    text_before!!.visibility=View.VISIBLE
+                    btn_takepic2!!.visibility = View.INVISIBLE
+                    btn_opnalbum2!!.visibility = View.INVISIBLE
+                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
+                        btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
 
-                  //  val bitmap = ImageDecoder.decodeBitmap(decode)
-
-                    val bitmap =  ImageDecoder.decodeBitmap(
-                        ImageDecoder.createSource()
-                    ) { decoder: ImageDecoder, _: ImageDecoder.ImageInfo?, _: ImageDecoder.Source? ->
-                        decoder.isMutableRequired = true
-                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
                     }
 
                     img_view1?.setImageBitmap(bitmap)
                     text_before!!.visibility=View.VISIBLE
+                    btn_takepic1!!.visibility = View.INVISIBLE
+                    btn_opnalbum1!!.visibility = View.INVISIBLE
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(Color.BLUE)
                         btn_savepic?.isEnabled = true
@@ -361,6 +366,8 @@ class MainActivity : AppCompatActivity() {
                         .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
                     img_view2?.setImageBitmap(bitmap)
                     text_after!!.visibility=View.VISIBLE
+                    btn_takepic2!!.visibility = View.INVISIBLE
+                    btn_opnalbum2!!.visibility = View.INVISIBLE
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(Color.BLUE)
                         btn_savepic?.isEnabled = true
@@ -372,6 +379,8 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = ImageDecoder.decodeBitmap(decode)
                     img_view2?.setImageBitmap(bitmap)
                     text_after!!.visibility=View.VISIBLE
+                    btn_takepic2!!.visibility = View.INVISIBLE
+                    btn_opnalbum2!!.visibility = View.INVISIBLE
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(Color.BLUE)
                         btn_savepic?.isEnabled = true

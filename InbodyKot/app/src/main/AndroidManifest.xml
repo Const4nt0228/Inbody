@@ -27,7 +27,6 @@
                 android:resource="@xml/filepaths" />
         </provider>
 
-        출처: https://juahnpop.tistory.com/223 [Blacklog]
 
         <activity
             android:name=".MainActivity"
