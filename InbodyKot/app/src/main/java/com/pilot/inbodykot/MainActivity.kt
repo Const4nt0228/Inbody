@@ -65,6 +65,8 @@ class MainActivity : AppCompatActivity() {
         this.InitializeView()
         this.SetListener()
 
+        btn_savepic?.isEnabled = false
+
 
 
     }//onCreate
@@ -84,6 +86,8 @@ class MainActivity : AppCompatActivity() {
         text_before = findViewById<TextView>(R.id.textBefore)
         text_after = findViewById<TextView>(R.id.textAfter)
         btn_savepic = findViewById<Button>(R.id.btnSavePic)
+
+
 
     }//onCreate 초기화
 
@@ -254,7 +258,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     // 카메라로 촬영한 이미지를 파일로 저장해준다
     @Throws(IOException::class)
     private fun createImageFile(): File {
@@ -290,6 +293,7 @@ class MainActivity : AppCompatActivity() {
 
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(titleColor)
+                        btn_savepic?.isEnabled = true
 
                     }
 
@@ -309,6 +313,7 @@ class MainActivity : AppCompatActivity() {
                     text_after!!.visibility=View.VISIBLE
                     if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
                         btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
                     }
 
                 } catch (e: Exception) {
@@ -322,12 +327,31 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = MediaStore.Images.Media
                         .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
                     img_view1?.setImageBitmap(bitmap)
+                    text_before!!.visibility=View.VISIBLE
+                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
+                        btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
+                    }
                 }
                 else{
                     val decode = ImageDecoder.createSource(this.contentResolver,
                         Uri.fromFile(file))
-                    val bitmap = ImageDecoder.decodeBitmap(decode)
+
+                  //  val bitmap = ImageDecoder.decodeBitmap(decode)
+
+                    val bitmap =  ImageDecoder.decodeBitmap(
+                        ImageDecoder.createSource()
+                    ) { decoder: ImageDecoder, _: ImageDecoder.ImageInfo?, _: ImageDecoder.Source? ->
+                        decoder.isMutableRequired = true
+                        decoder.allocator = ImageDecoder.ALLOCATOR_SOFTWARE
+                    }
+
                     img_view1?.setImageBitmap(bitmap)
+                    text_before!!.visibility=View.VISIBLE
+                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
+                        btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
+                    }
                 }
             }else if(requestCode==REQUEST_IMAGE_CAPTURE2 && resultCode==Activity.RESULT_OK){
                 // 카메라로부터 받은 데이터가 있을경우에만
@@ -336,12 +360,22 @@ class MainActivity : AppCompatActivity() {
                     val bitmap = MediaStore.Images.Media
                         .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
                     img_view2?.setImageBitmap(bitmap)
+                    text_after!!.visibility=View.VISIBLE
+                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
+                        btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
+                    }
                 }
                 else{
                     val decode = ImageDecoder.createSource(this.contentResolver,
                         Uri.fromFile(file))
                     val bitmap = ImageDecoder.decodeBitmap(decode)
                     img_view2?.setImageBitmap(bitmap)
+                    text_after!!.visibility=View.VISIBLE
+                    if((text_after!!.visibility==View.VISIBLE) && (text_before!!.visibility==View.VISIBLE)){
+                        btn_savepic!!.setBackgroundColor(Color.BLUE)
+                        btn_savepic?.isEnabled = true
+                    }
                 }
             }
 
