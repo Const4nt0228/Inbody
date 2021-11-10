@@ -2,7 +2,6 @@ package com.pilot.inbodykot
 
 import android.Manifest.permission.CAMERA
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
-import android.R.attr
 import android.app.Activity
 
 import android.content.Intent
@@ -18,8 +17,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.graphics.drawable.toBitmap
-import android.R.attr.bitmap
 import android.content.pm.PackageManager
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.core.app.ActivityCompat
@@ -50,12 +50,12 @@ class MainActivity : AppCompatActivity() {
     var text_after: TextView? = null
     private val GALLERY1 = 1
     private val GALLERY2 = 2
-
+    val REQUEST_IMAGE_CAPTURE = 3
+    val REQUEST_IMAGE_CAPTURE2 = 4
 
     var ImnageData2: Uri? = null
     var ImnageData3: Uri? = null
 
-    val REQUEST_IMAGE_CAPTURE = 1
     lateinit var currentPhotoPath: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -96,6 +96,11 @@ class MainActivity : AppCompatActivity() {
         }
         btn_takepic1?.setOnClickListener {
 
+            if(checkPersmission()){
+                dispatchTakePictureIntent(REQUEST_IMAGE_CAPTURE)
+            }else{
+                requestPermission()
+            }
 
         }
         btn_opnalbum1?.setOnClickListener {
@@ -110,7 +115,11 @@ class MainActivity : AppCompatActivity() {
             btn_opnalbum2!!.visibility = View.VISIBLE
         }
         btn_takepic2?.setOnClickListener {
-
+            if(checkPersmission()){
+                dispatchTakePictureIntent(REQUEST_IMAGE_CAPTURE2)
+            }else{
+                requestPermission()
+            }
         }
         btn_opnalbum2?.setOnClickListener {
             val intent: Intent = Intent(Intent.ACTION_GET_CONTENT)
@@ -205,6 +214,8 @@ class MainActivity : AppCompatActivity() {
             Log.d("TAG","카메라 실패")
         }
     }
+
+    //비트맵 합치기
     private fun combineBitmaps(left: Bitmap, right: Bitmap): Bitmap? {
         // Get the size of the images combined side by side.
         val width = left.width + right.width
@@ -219,7 +230,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     // 카메라 열기
-    private fun dispatchTakePictureIntent() {
+    private fun dispatchTakePictureIntent(req_code : Int) {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             if (takePictureIntent.resolveActivity(this.packageManager) != null) {
                 // 찍은 사진을 그림파일로 만들기
@@ -237,7 +248,7 @@ class MainActivity : AppCompatActivity() {
                         this, "com.pilot.inbodykot.fileprovider", it
                     )
                     takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+                    startActivityForResult(takePictureIntent, req_code)
                 }
             }
         }
@@ -303,6 +314,34 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     e.printStackTrace()
 
+                }
+            }else if(requestCode==REQUEST_IMAGE_CAPTURE && resultCode==Activity.RESULT_OK){
+                   // 카메라로부터 받은 데이터가 있을경우에만
+                val file = File(currentPhotoPath)
+                if (Build.VERSION.SDK_INT < 28) {
+                    val bitmap = MediaStore.Images.Media
+                        .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
+                    img_view1?.setImageBitmap(bitmap)
+                }
+                else{
+                    val decode = ImageDecoder.createSource(this.contentResolver,
+                        Uri.fromFile(file))
+                    val bitmap = ImageDecoder.decodeBitmap(decode)
+                    img_view1?.setImageBitmap(bitmap)
+                }
+            }else if(requestCode==REQUEST_IMAGE_CAPTURE2 && resultCode==Activity.RESULT_OK){
+                // 카메라로부터 받은 데이터가 있을경우에만
+                val file = File(currentPhotoPath)
+                if (Build.VERSION.SDK_INT < 28) {
+                    val bitmap = MediaStore.Images.Media
+                        .getBitmap(contentResolver, Uri.fromFile(file))  //Deprecated
+                    img_view2?.setImageBitmap(bitmap)
+                }
+                else{
+                    val decode = ImageDecoder.createSource(this.contentResolver,
+                        Uri.fromFile(file))
+                    val bitmap = ImageDecoder.decodeBitmap(decode)
+                    img_view2?.setImageBitmap(bitmap)
                 }
             }
 
