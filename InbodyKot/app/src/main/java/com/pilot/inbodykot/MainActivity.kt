@@ -132,6 +132,7 @@ class MainActivity : AppCompatActivity() {
             startActivityForResult(intent,GALLERY2)
         }
 
+        //finish 를 통해 다시 재시작
         btn_savepic?.setOnClickListener {
             var bit0 : Bitmap? = null
             var bit1 = img_view1?.drawable?.toBitmap()
@@ -145,6 +146,10 @@ class MainActivity : AppCompatActivity() {
                 bit0,
               "BeforeNAfter_0",""
             )
+
+            val intent = intent
+            finish()
+            startActivity(intent)
 
 
         }
